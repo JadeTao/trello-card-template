@@ -8,10 +8,10 @@
 // @include      https://trello.com/*
 // ==/UserScript==
 
-(function() {
-  'use strict';
-  var store = {
-      '[userstory]':`# 背景故事
+(() => {
+    'use strict';
+    const store = {
+        '[userstory]': `# 背景故事
 1. <内容>
 2. <内容>
 3. <内容>
@@ -33,7 +33,7 @@
 
 # 参考资料
 <参考资料>
-`, '[bug]':`## 描述
+`, '[bug]': `## 描述
 <bug描述>
 
 ## 环境
@@ -51,7 +51,7 @@
 
 ## 预期
 <预期可作为AC>
-`,'[child]':`## 母卡
+`, '[child]': `## 母卡
 <母卡链接>
 
 ## 方案
@@ -64,38 +64,29 @@
 2. <验收标准>
 3. <验收标准>
 `
-  }
-  window.__handler = setInterval(function() {
-      var path = window.location.pathname;
-      if (path.startsWith('/b/')) {
-          var a = document.querySelectorAll('a.list-card.js-member-droppable');
-          if (a && a.length !== 0) {
-              clearInterval(window.__handler);
-              Array.from(a).forEach(node=>node.addEventListener('click', function() {
-                  var textarea = document.querySelector('textarea.field.js-description-draft.card-back-description.autosave');
-
-                  if (textarea) {
-                      textarea.addEventListener('blur', function() {
-                          var trimmedValue = String(textarea.value).trim();
-                          if (store.hasOwnProperty(trimmedValue)) {
-                              textarea.value = store[trimmedValue];
-                          }
-                      })
-                  }
-              }))
-          }
-      } else if (path.startsWith('/c/')) {
-          var textarea = document.querySelector('textarea.field.js-description-draft.card-back-description.autosave');
-          if (textarea) {
-              clearInterval(window.__handler);
-              textarea.addEventListener('blur', function() {
-                var trimmedValue = String(textarea.value).trim();
+    }
+    const transformer = () => {
+        const textarea = document.querySelector('textarea.field.js-description-draft.card-back-description.autosave');
+        if (textarea) {
+            textarea.addEventListener('blur', () => {
+                const trimmedValue = String(textarea.value).trim();
                 if (store.hasOwnProperty(trimmedValue)) {
                     textarea.value = store[trimmedValue];
                 }
-              })
-          }
-      }
-  }, 300)
+            })
+        }
+    }
+    window.__handler = setInterval(() => {
+        const path = window.location.pathname;
+        if (path.startsWith('/b/')) {
+            const a = document.querySelectorAll('a.list-card.js-member-droppable');
+            if (a && a.length !== 0) {
+                clearInterval(window.__handler);
+                Array.from(a).forEach(node => node.addEventListener('click', transformer))
+            }
+        } else if (path.startsWith('/c/')) {
+            transformer()
+        }
+    }, 300)
 }
 )(window);
